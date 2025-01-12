@@ -1,36 +1,45 @@
 package crawl
 
 import (
+	"data_crawler/config"
 	"fmt"
-	"io/ioutil"
+	"go.uber.org/zap"
+	"io"
 	"net/http"
 )
 
 type ConfluenceCrawler struct {
 	BaseURL  string
-	Username string
 	APIToken string
+	logger   *zap.Logger
 }
 
-func NewConfluenceCrawler(baseURL, username, apiToken string) *ConfluenceCrawler {
-	return &ConfluenceCrawler{BaseURL: baseURL, Username: username, APIToken: apiToken}
+func NewConfluenceCrawler(cfg *config.CrawlerConfig, logger *zap.Logger) *ConfluenceCrawler {
+	return &ConfluenceCrawler{BaseURL: cfg.Domain, APIToken: cfg.APIToken, logger: logger}
 }
 
-func (cc *ConfluenceCrawler) Crawl() ([]byte, error) {
-	url := fmt.Sprintf("%s/rest/api/content", cc.BaseURL)
+func (inst *ConfluenceCrawler) Crawl(chanMsg chan<- string) {
+	url := fmt.Sprintf("%s/rest/api/2/search", inst.BaseURL)
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
-		return nil, err
+		inst.logger.Error("Failed to create request", zap.Error(err))
+		return
 	}
-	req.SetBasicAuth(cc.Username, cc.APIToken)
+	req.SetBasicAuth("", inst.APIToken)
 	req.Header.Set("Accept", "application/json")
 
 	client := &http.Client{}
 	resp, err := client.Do(req)
 	if err != nil {
-		return nil, err
+		inst.logger.Error("Failed to send request", zap.Error(err))
+		return
 	}
 	defer resp.Body.Close()
 
-	return ioutil.ReadAll(resp.Body)
+	msg, err := io.ReadAll(resp.Body)
+	if err != nil {
+		inst.logger.Error("Failed to read response", zap.Error(err))
+		return
+	}
+	chanMsg <- string(msg)
 }

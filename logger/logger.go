@@ -1,17 +1,18 @@
 package logger
 
 import (
+	"errors"
 	"go.uber.org/zap"
 )
 
-var Log *zap.Logger
-
 // InitLogger initializes the zap logger.
-func InitLogger() {
-	var err error
-	Log, err = zap.NewProduction() // Use zap.NewDevelopment() for development mode
-	if err != nil {
-		panic("failed to initialize logger: " + err.Error())
+func InitLogger(mode string) (*zap.Logger, error) {
+	switch mode {
+	case "development":
+		return zap.NewDevelopment()
+	case "production":
+		return zap.NewProduction()
+	default:
+		return nil, errors.New("invalid log mode")
 	}
-	defer Log.Sync() // Flushes buffer, if any
 }
