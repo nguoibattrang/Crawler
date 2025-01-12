@@ -1,0 +1,20 @@
+crawlers:
+  - type: jira
+    base_url: https://jira.example.com
+    api_token: your-jira-api-token
+    username: your-jira-username
+    interval: 10m
+    other_jira_field: "xxx"
+  - type: confluence
+    base_url: https://confluence.example.com
+    api_token: your-confluence-api-token
+    username: your-confluence-username
+    interval: 15m
+    
+
+kafka:
+  brokers:
+    - kafka-server:9092
+  topics:
+    jira: jira-topic
+    confluence: confluence-topic
