@@ -14,7 +14,7 @@ type ServiceConfig struct {
 
 type CrawlerConfig struct {
 	Type     string        `yaml:"type"`
-	Domain   string        `yaml:"domain"`
+	Path     string        `yaml:"path"`
 	APIToken string        `yaml:"api_token"`
 	Interval time.Duration `yaml:"interval"`
 }
@@ -25,7 +25,7 @@ type LogConfig struct {
 
 type KafkaConfig struct {
 	Brokers []string `yaml:"brokers"`
-	Topics  string   `yaml:"topic"`
+	Topic   string   `yaml:"topic"`
 }
 
 func LoadConfig(filename string) (*ServiceConfig, error) {

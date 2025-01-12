@@ -1,33 +1,65 @@
 package output
 
 import (
+	"context"
+	"fmt"
 	"github.com/segmentio/kafka-go"
 	"go.uber.org/zap"
 )
 
 type KafkaProducer struct {
-	Writer *kafka.Writer
-	logger *zap.Logger
+	writer *kafka.Writer
+	log    *zap.Logger
 }
 
-func NewKafkaProducer(brokers []string, topic string, logger *zap.Logger) *KafkaProducer {
+func NewKafkaProducer(brokers []string, topic string, log *zap.Logger) (*KafkaProducer, error) {
+	err := ensureTopicExists(brokers, topic, log)
+	if err != nil {
+		return nil, err
+	}
 	return &KafkaProducer{
-		Writer: &kafka.Writer{
+		writer: &kafka.Writer{
 			Addr:     kafka.TCP(brokers...),
 			Topic:    topic,
 			Balancer: &kafka.LeastBytes{},
 		},
-		logger: logger,
-	}
+		log: log,
+	}, nil
 }
 
-func (kp *KafkaProducer) Produce(mChan <-chan string) {
+func (inst *KafkaProducer) Produce(mChan <-chan string) {
 	for message := range mChan {
-		err := kp.Writer.WriteMessages(nil, kafka.Message{
+		err := inst.writer.WriteMessages(context.Background(), kafka.Message{
 			Value: []byte(message),
 		})
 		if err != nil {
-			kp.logger.Error("Failed to publish message", zap.Error(err))
+			inst.log.Panic("Failed to publish message", zap.Error(err))
 		}
 	}
+}
+
+func ensureTopicExists(brokers []string, topic string, log *zap.Logger) error {
+	// Create a Kafka connection to the broker
+	conn, err := kafka.Dial("tcp", kafka.TCP(brokers...).String())
+	if err != nil {
+		return fmt.Errorf("failed to connect to Kafka broker: %w", err)
+	}
+	defer conn.Close()
+
+	topicConfigs := []kafka.TopicConfig{
+		{
+			Topic:             topic,
+			NumPartitions:     -1,
+			ReplicationFactor: -1,
+		},
+	}
+
+	err = conn.CreateTopics(topicConfigs...)
+	if err != nil {
+		log.Error("failed to create topic", zap.Error(err))
+		return err
+	}
+
+	log.Info("Topic created", zap.String("topic", topic))
+	return nil
 }

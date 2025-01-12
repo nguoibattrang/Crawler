@@ -6,12 +6,14 @@ import (
 	"data_crawler/logger"
 	"data_crawler/output"
 	"fmt"
+	"go.uber.org/zap"
 	"os"
+	"path/filepath"
 )
 
 func main() {
 	// Load configuration
-	serviceCfg, err := config.LoadConfig("C:\\Users\\tient\\Desktop\\Crawler\\app.yml")
+	serviceCfg, err := config.LoadConfig(filepath.Join(os.Getenv("CONFIG_PATH"), "config.yaml"))
 	if err != nil {
 		fmt.Printf("config.LoadConfig fail to load config %v", err)
 		os.Exit(1)
@@ -23,14 +25,17 @@ func main() {
 		os.Exit(1)
 	}
 
-	crawlers := crawl.CreateCrawlers(serviceCfg.Crawlers, log)
-	producer := output.NewKafkaProducer(serviceCfg.Kafka.Brokers, serviceCfg.Kafka.Topics, log)
+	producer, err := output.NewKafkaProducer(serviceCfg.Kafka.Brokers, serviceCfg.Kafka.Topic, log)
+	if err != nil {
+		log.Fatal("Failed to init kafka producer", zap.Error(err))
+		os.Exit(1)
+	}
 
+	crawlers := crawl.CreateCrawlers(serviceCfg.Crawlers, log)
 	mChan := make(chan string)
 	for _, c := range crawlers {
 		go c.Crawl(mChan)
 	}
 
 	producer.Produce(mChan)
-	log.Info("crawler exited")
 }

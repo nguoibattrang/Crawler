@@ -1,15 +1,10 @@
 logger:
   mode: development
 crawlers:
-  - type: jira
-    domain: jira.example.com
-    api_token: your-jira-api-token
+  - type: file
+    path: C:\Users\tient\Desktop\vcs-hackathon-2024\data
     interval: 10m
-  - type: confluence
-    domain: confluence.example.com
-    api_token: your-confluence-api-token
-    interval: 15m
 kafka:
   brokers:
-    - kafka-server:9092
+    - 192.168.80.132:9092
   topic: train-data

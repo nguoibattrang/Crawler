@@ -9,23 +9,23 @@ import (
 )
 
 type ConfluenceCrawler struct {
-	BaseURL  string
-	APIToken string
-	logger   *zap.Logger
+	url    string
+	token  string
+	logger *zap.Logger
 }
 
 func NewConfluenceCrawler(cfg *config.CrawlerConfig, logger *zap.Logger) *ConfluenceCrawler {
-	return &ConfluenceCrawler{BaseURL: cfg.Domain, APIToken: cfg.APIToken, logger: logger}
+	return &ConfluenceCrawler{url: cfg.Path, token: cfg.APIToken, logger: logger}
 }
 
 func (inst *ConfluenceCrawler) Crawl(chanMsg chan<- string) {
-	url := fmt.Sprintf("%s/rest/api/2/search", inst.BaseURL)
+	url := fmt.Sprintf("%s/rest/api/2/search", inst.url)
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
 		inst.logger.Error("Failed to create request", zap.Error(err))
 		return
 	}
-	req.SetBasicAuth("", inst.APIToken)
+	req.SetBasicAuth("", inst.token)
 	req.Header.Set("Accept", "application/json")
 
 	client := &http.Client{}

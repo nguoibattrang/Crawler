@@ -11,6 +11,8 @@ func Create(cfg *config.CrawlerConfig, log *zap.Logger) Crawler {
 		return NewJiraCrawler(cfg, log)
 	case "confluence":
 		return NewConfluenceCrawler(cfg, log)
+	case "file":
+		return NewFileCrawler(cfg, log)
 	}
 	return nil
 }
