@@ -18,7 +18,7 @@ func NewConfluenceCrawler(cfg *config.CrawlerConfig, logger *zap.Logger) *Conflu
 	return &ConfluenceCrawler{url: cfg.Path, token: cfg.APIToken, logger: logger}
 }
 
-func (inst *ConfluenceCrawler) Crawl(chanMsg chan<- string) {
+func (inst *ConfluenceCrawler) Crawl(chanMsg chan<- Data) {
 	url := fmt.Sprintf("%s/rest/api/2/search", inst.url)
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
@@ -41,5 +41,9 @@ func (inst *ConfluenceCrawler) Crawl(chanMsg chan<- string) {
 		inst.logger.Error("Failed to read response", zap.Error(err))
 		return
 	}
-	chanMsg <- string(msg)
+	chanMsg <- Data{
+		Content: string(msg),
+		URL:     url,
+		Type:    "confluence",
+	}
 }

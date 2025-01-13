@@ -2,8 +2,11 @@ logger:
   mode: development
 crawlers:
   - type: file
-    path: C:\Users\tient\Desktop\vcs-hackathon-2024\data
-    interval: 10m
+    path: \data
+    site: jira
+  - type: file
+    path: \data2
+    site: confluence
 kafka:
   brokers:
     - 192.168.80.132:9092

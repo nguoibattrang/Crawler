@@ -1,23 +1,24 @@
 package crawl
 
 import (
-	"fmt"
-	"github.com/nguoibattrang/crawler/config"
-	"go.uber.org/zap"
 	"os"
 	"path/filepath"
+
+	"github.com/nguoibattrang/crawler/config"
+	"go.uber.org/zap"
 )
 
 type FileCrawler struct {
 	Path   string
 	logger *zap.Logger
+	Site   string
 }
 
 func NewFileCrawler(cfg *config.CrawlerConfig, logger *zap.Logger) *FileCrawler {
 	return &FileCrawler{Path: cfg.Path, logger: logger}
 }
 
-func (inst *FileCrawler) Crawl(chanMsg chan<- string) {
+func (inst *FileCrawler) Crawl(chanMsg chan<- Data) {
 	// Read all files in the directory
 	files, err := os.ReadDir(inst.Path)
 	if err != nil {
@@ -35,9 +36,13 @@ func (inst *FileCrawler) Crawl(chanMsg chan<- string) {
 
 		content, err := os.ReadFile(filePath)
 		if err != nil {
-			fmt.Printf("Error reading file %s: %v\n", filePath, err)
+			inst.logger.Error("Error reading file", zap.String("filepath", filePath), zap.Error(err))
 			continue
 		}
-		chanMsg <- string(content)
+
+		chanMsg <- Data{
+			Type:    inst.Site,
+			Content: string(content),
+		}
 	}
 }

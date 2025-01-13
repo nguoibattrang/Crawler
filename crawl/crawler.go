@@ -1,5 +1,5 @@
 package crawl
 
 type Crawler interface {
-	Crawl(chan<- string)
+	Crawl(chan<- Data)
 }

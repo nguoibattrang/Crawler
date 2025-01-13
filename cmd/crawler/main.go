@@ -32,7 +32,7 @@ func main() {
 	}
 
 	crawlers := crawl.CreateCrawlers(serviceCfg.Crawlers, log)
-	mChan := make(chan string)
+	mChan := make(chan crawl.Data)
 	for _, c := range crawlers {
 		go c.Crawl(mChan)
 	}

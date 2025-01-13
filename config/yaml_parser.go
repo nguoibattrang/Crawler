@@ -2,8 +2,8 @@ package config
 
 import (
 	"fmt"
+
 	"github.com/spf13/viper"
-	"time"
 )
 
 type ServiceConfig struct {
@@ -13,10 +13,10 @@ type ServiceConfig struct {
 }
 
 type CrawlerConfig struct {
-	Type     string        `yaml:"type"`
-	Path     string        `yaml:"path"`
-	APIToken string        `yaml:"api_token"`
-	Interval time.Duration `yaml:"interval"`
+	Type     string `yaml:"type"`
+	Path     string `yaml:"path"`
+	APIToken string `yaml:"api_token"`
+	Site     string `yaml:"site"`
 }
 
 type LogConfig struct {

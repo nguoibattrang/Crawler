@@ -2,7 +2,10 @@ package output
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
+
+	"github.com/nguoibattrang/crawler/crawl"
 	"github.com/segmentio/kafka-go"
 	"go.uber.org/zap"
 )
@@ -27,10 +30,15 @@ func NewKafkaProducer(brokers []string, topic string, log *zap.Logger) (*KafkaPr
 	}, nil
 }
 
-func (inst *KafkaProducer) Produce(mChan <-chan string) {
+func (inst *KafkaProducer) Produce(mChan <-chan crawl.Data) {
 	for message := range mChan {
-		err := inst.writer.WriteMessages(context.Background(), kafka.Message{
-			Value: []byte(message),
+		m, err := json.Marshal(message)
+		if m != nil {
+			inst.log.Error("Convert data to JSON fail", zap.Error(err))
+			continue
+		}
+		err = inst.writer.WriteMessages(context.Background(), kafka.Message{
+			Value: []byte(m),
 		})
 		if err != nil {
 			inst.log.Panic("Failed to publish message", zap.Error(err))
