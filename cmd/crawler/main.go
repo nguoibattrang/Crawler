@@ -13,7 +13,7 @@ import (
 
 func main() {
 	// Load configuration
-	serviceCfg, err := config.LoadConfig(filepath.Join(os.Getenv("CONFIG_PATH"), "config.yaml"))
+	serviceCfg, err := config.LoadConfig(filepath.Join(os.Getenv("CONFIG_PATH"), "app.yaml"))
 	if err != nil {
 		fmt.Printf("config.LoadConfig fail to load config %v", err)
 		os.Exit(1)
