@@ -1,11 +1,11 @@
 package main
 
 import (
-	"data_crawler/config"
-	"data_crawler/crawl"
-	"data_crawler/logger"
-	"data_crawler/output"
 	"fmt"
+	"github.com/nguoibattrang/crawler/config"
+	"github.com/nguoibattrang/crawler/crawl"
+	"github.com/nguoibattrang/crawler/logger"
+	"github.com/nguoibattrang/crawler/output"
 	"go.uber.org/zap"
 	"os"
 	"path/filepath"

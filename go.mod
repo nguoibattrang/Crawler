@@ -1,4 +1,4 @@
-module data_crawler
+module github.com/nguoibattrang/crawler
 
 go 1.21
 

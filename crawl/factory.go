@@ -1,7 +1,7 @@
 package crawl
 
 import (
-	"data_crawler/config"
+	"github.com/nguoibattrang/crawler/config"
 	"go.uber.org/zap"
 )
 

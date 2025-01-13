@@ -1,8 +1,8 @@
 package crawl
 
 import (
-	"data_crawler/config"
 	"fmt"
+	"github.com/nguoibattrang/crawler/config"
 	"go.uber.org/zap"
 	"io"
 	"net/http"
