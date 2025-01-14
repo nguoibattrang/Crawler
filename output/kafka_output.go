@@ -33,12 +33,12 @@ func NewKafkaProducer(brokers []string, topic string, log *zap.Logger) (*KafkaPr
 func (inst *KafkaProducer) Produce(mChan <-chan crawl.Data) {
 	for message := range mChan {
 		m, err := json.Marshal(message)
-		if m != nil {
+		if err != nil {
 			inst.log.Error("Convert data to JSON fail", zap.Error(err))
 			continue
 		}
 		err = inst.writer.WriteMessages(context.Background(), kafka.Message{
-			Value: []byte(m),
+			Value: m,
 		})
 		if err != nil {
 			inst.log.Panic("Failed to publish message", zap.Error(err))

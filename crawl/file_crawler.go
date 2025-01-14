@@ -15,7 +15,7 @@ type FileCrawler struct {
 }
 
 func NewFileCrawler(cfg *config.CrawlerConfig, logger *zap.Logger) *FileCrawler {
-	return &FileCrawler{Path: cfg.Path, logger: logger}
+	return &FileCrawler{Path: cfg.Path, logger: logger, Site: cfg.Site}
 }
 
 func (inst *FileCrawler) Crawl(chanMsg chan<- Data) {
